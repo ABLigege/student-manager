@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.student.mapper.StudentMapper">
+
+    <!-- 新增 -->
+    <insert id="insert" parameterType="com.student.entity.Student">
+        INSERT INTO student
+        (student_no, name, gender, birthday, political, id_card,
+        college_code, major_code, grade, address, phone, zip_code)
+        VALUES
+        (#{studentNo}, #{name}, #{gender}, #{birthday}, #{political}, #{idCard},
+        #{collegeCode}, #{majorCode}, #{grade}, #{address}, #{phone}, #{zipCode})
+    </insert>
+
+    <!-- 查询全部 -->
+    <select id="findAll" resultType="com.student.entity.Student">
+        SELECT * FROM student ORDER BY id DESC
+    </select>
+
+    <!-- 按 ID 查询 -->
+    <select id="findById" resultType="com.student.entity.Student">
+        SELECT * FROM student WHERE id = #{id}
+    </select>
+
+    <!-- 更新 -->
+    <update id="update" parameterType="com.student.entity.Student">
+        UPDATE student SET
+        student_no = #{studentNo},
+        name = #{name},
+        gender = #{gender},
+        birthday = #{birthday},
+        political = #{political},
+        id_card = #{idCard},
+        college_code = #{collegeCode},
+        major_code = #{majorCode},
+        grade = #{grade},
+        address = #{address},
+        phone = #{phone},
+        zip_code = #{zipCode}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="deleteById">
+        DELETE FROM student WHERE id = #{id}
+    </delete>
+
+    <!-- 按学院统计 -->
+    <select id="countByCollege" resultType="map">
+        SELECT c.college_name AS collegeName, COUNT(s.id) AS studentCount
+        FROM student s
+        LEFT JOIN college c ON s.college_code = c.college_code
+        GROUP BY s.college_code, c.college_name
+    </select>
+
+    <!-- 按专业统计 -->
+    <select id="countByMajor" resultType="map">
+        SELECT major_code AS majorCode, COUNT(id) AS studentCount
+        FROM student
+        GROUP BY major_code
+    </select>
+
+    <!-- 条件查询 -->
+    <select id="findByCondition" parameterType="map" resultType="com.student.entity.Student">
+        SELECT * FROM student
+        <where>
+            <if test="collegeCode != null and collegeCode != ''">
+                AND college_code = #{collegeCode}
+            </if>
+            <if test="majorCode != null and majorCode != ''">
+                AND major_code = #{majorCode}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (name LIKE CONCAT('%', #{keyword}, '%') OR student_no LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+</mapper>
