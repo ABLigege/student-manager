@@ -17,12 +17,14 @@ public class UpdateStudentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+
+        System.out.println("==== UpdateStudentServlet doGet 被调用了 ====");  // 👈 加这行
+
         String idStr = req.getParameter("id");
         Student student = service.getStudentById(Integer.parseInt(idStr));
         req.setAttribute("student", student);
         req.getRequestDispatcher("/updateStudent.jsp").forward(req, resp);
     }
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
